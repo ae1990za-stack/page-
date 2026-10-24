@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#101827">
+    <meta name="description" content="LANDING PRO - √‰‘∆ ’›Õ«  Â»Êÿ «Õ —«›Ì… ·Õ„·« ﬂ «·≈⁄·«‰Ì… œÊ‰ »—„Ã….">
+    <title>LANDING PRO | „’‰⁄ ’›Õ«  «·Â»Êÿ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+    <a href="#" class="brand">
+        <span class="brand-icon">L</span>
+        <span>LANDING <b>PRO</b></span>
+    </a>
+
+    <span class="top-label">„’‰⁄ ’›Õ«  «·Â»Êÿ «·–ﬂÌ</span>
+
+    <button id="resetBtn" class="btn btn-outline" type="button">
+        „‘—Ê⁄ ÃœÌœ
+    </button>
+</header>
+
+<main class="container">
+
+    <section class="hero">
+        <div class="hero-badge">? √œ«… „Ã«‰Ì… ·≈‰‘«¡ ’›Õ«  «· ”ÊÌﬁ</div>
+
+        <h1>ÕÊ¯· ›ﬂ— ﬂ ≈·Ï ’›Õ… Â»Êÿ <span>«Õ —«›Ì…</span></h1>
+
+        <p>
+            √œŒ· »Ì«‰«  „‰ Ãﬂ° «Œ — «· ’„Ì„° Ê‘«Âœ «·‰ ÌÃ… „»«‘—….
+            À„ ‰“¯· ’›Õ ﬂ Ã«Â“… ··‰‘—.
+        </p>
+
+        <div class="hero-features">
+            <span>? »œÊ‰ »—„Ã…</span>
+            <span>? „⁄«Ì‰… „»«‘—…</span>
+            <span>?  ‰“Ì· „·›«  «·„Êﬁ⁄</span>
+        </div>
+    </section>
+
+    <section class="workspace">
+
+        <!-- ·ÊÕ… ≈⁄œ«œ«  «·„‘—Ê⁄ -->
+        <aside class="editor-panel">
+
+            <div class="panel-heading">
+                <div>
+                    <h2>≈‰‘«¡ ’›Õ… ÃœÌœ…</h2>
+                    <p>Œ’’ ’›Õ ﬂ „‰ Â‰«</p>
+                </div>
+                <span class="status-dot">„»«‘—</span>
+            </div>
+
+            <form id="landingForm">
+
+                <div class="field">
+                    <label for="template">«Œ — ‰Ê⁄ «· ’„Ì„</label>
+                    <select id="template">
+                        <option value="product">„ Ã— Ê„‰ Ã</option>
+                        <option value="service">Œœ„«  Ê‘—ﬂ« </option>
+                        <option value="restaurant">„ÿ⁄„ Ê„√ﬂÊ·« </option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="businessName">«”„ «·‰‘«ÿ «· Ã«—Ì</label>
+                    <input id="businessName" type="text"
+                           placeholder="„À«·: „ Ã— «·√‰«ﬁ…">
+                </div>
+
+                <div class="field">
+                    <label for="headline">«·⁄‰Ê«‰ «·—∆Ì”Ì</label>
+                    <input id="headline" type="text"
+                           placeholder="«ﬂ » ⁄‰Ê«‰« ÌÃ–» «·⁄„·«¡">
+                </div>
+
+                <div class="field">
+                    <label for="description">Ê’› «·„‰ Ã √Ê «·Œœ„…</label>
+                    <textarea id="description" rows="3"
+                              placeholder="«ﬂ » Ê’›« Ê«÷Õ« Ê„„Ì“«..."></textarea>
+                </div>
+
+                <div class="field">
+                    <label for="price">«·”⁄— (»«·Ã‰ÌÂ «·„’—Ì)</label>
+                    <input id="price" type="number" min="0" step="0.01"
+                           placeholder="„À«·: 499">
+                </div>
+
+                <div class="field">
+                    <label for="oldPrice">«·”⁄— ﬁ»· «·Œ’„ («Œ Ì«—Ì)</label>
+                    <input id="oldPrice" type="number" min="0" step="0.01"
+                           placeholder="„À«·: 650">
+                </div>
+
+                <div class="field">
+                    <label for="features">„„Ì“«  «·„‰ Ã √Ê «·Œœ„…</label>
+                    <textarea id="features" rows="4"
+                              placeholder="ﬂ· „Ì“… ›Ì ”ÿ— „‰›’·&#10;ÃÊœ… „„ «“…&#10; Ê’Ì· ”—Ì⁄&#10;÷„«‰"></textarea>
+                    <small>«ﬂ » ﬂ· „Ì“… ›Ì ”ÿ— „‰›’·.</small>
+                </div>
+
+                <div class="field">
+                    <label for="imageUpload">’Ê—… «·„‰ Ã √Ê «·‰‘«ÿ</label>
+                    <input id="imageUpload" type="file"
+                           accept="image/png,image/jpeg,image/webp">
+                    <small>Ì›÷· «” Œœ«„ ’Ê—… Ê«÷Õ… »ÕÃ„ √ﬁ· „‰ 3 „ÌÃ«»«Ì .</small>
+                    <button id="removeImage" class="text-button"
+                            type="button" hidden>≈“«·… «·’Ê—…</button>
+                </div>
+
+                <div class="field">
+                    <label for="whatsapp">—ﬁ„ Ê« ”«» ·· Ê«’·</label>
+                    <input id="whatsapp" type="tel"
+                           placeholder="„À«·: 201012345678">
+                    <small>√œŒ· „› «Õ «·œÊ·…° „À· 20 ·„’—° œÊ‰ ⁄·«„… +.</small>
+                </div>
+
+                <div class="field">
+                    <label for="buttonText">‰’ “— «·ÿ·»</label>
+                    <input id="buttonText" type="text" maxlength="45"
+                           placeholder="«ÿ·» «·¬‰">
+                </div>
+
+                <div class="field">
+                    <label for="primaryColor">«··Ê‰ «·√”«”Ì</label>
+                    <div class="color-row">
+                        <input id="primaryColor" type="color" value="#16a36a">
+                        <span>«Œ — ·Ê‰ ⁄·«„ ﬂ «· Ã«—Ì…</span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="backgroundColor">·Ê‰ Œ·›Ì… «·’›Õ…</label>
+                    <div class="color-row">
+                        <input id="backgroundColor" type="color" value="#ffffff">
+                        <span>Œ·›Ì… ’›Õ… «·Â»Êÿ</span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="ctaMessage">—”«·… Ê« ”«» («Œ Ì«—Ì)</label>
+                    <textarea id="ctaMessage" rows="2"
+                              placeholder="„—Õ»«° √—Ìœ «·«” ›”«— ⁄‰ «·„‰ Ã."></textarea>
+                </div>
+
+                <div class="editor-actions">
+                    <button class="btn btn-primary" type="submit">
+                         ÕœÌÀ «·„⁄«Ì‰…
+                    </button>
+
+                    <button id="saveBtn" class="btn btn-secondary"
+                            type="button">
+                        Õ›Ÿ «·„‘—Ê⁄
+                    </button>
+                </div>
+
+                <button id="downloadBtn" class="btn btn-download"
+                        type="button">
+                    ?  ‰“Ì· ’›Õ… «·Â»Êÿ
+                </button>
+
+                <p id="message" class="message" role="status" aria-live="polite"></p>
+
+            </form>
+        </aside>
+
+        <!-- „⁄«Ì‰… «·’›Õ… -->
+        <section class="preview-panel">
+
+            <div class="preview-toolbar">
+                <div>
+                    <h2>„⁄«Ì‰… «·’›Õ…</h2>
+                    <p>«· ⁄œÌ·«   ŸÂ— ›Ì Â–Â «·‰«›–…</p>
+                </div>
+
+                <div class="preview-controls">
+                    <button id="desktopBtn" class="device-btn active"
+                            type="button" aria-pressed="true">
+                        ?? ﬂ„»ÌÊ —
+                    </button>
+
+                    <button id="mobileBtn" class="device-btn"
+                            type="button" aria-pressed="false">
+                        ?? Â« ›
+                    </button>
+                </div>
+            </div>
+
+            <div class="preview-stage">
+                <iframe id="previewFrame"
+                        title="„⁄«Ì‰… ’›Õ… «·Â»Êÿ"
+                        sandbox="allow-scripts allow-forms allow-popups"
+                        referrerpolicy="no-referrer">
+                </iframe>
+            </div>
+
+            <div class="preview-footer">
+                <span>? «·„⁄«Ì‰… „Õ·Ì…</span>
+                <span>’›Õ ﬂ ·«  ı‰‘—  ·ﬁ«∆Ì« ⁄·Ï «·≈‰ —‰ </span>
+            </div>
+
+        </section>
+    </section>
+
+    <section class="how-it-works">
+        <h2>ﬂÌ›  ” Œœ„ LANDING PROø</h2>
+
+        <div class="steps">
+            <article class="step-card">
+                <span>01</span>
+                <h3>√œŒ· «·»Ì«‰« </h3>
+                <p>«ﬂ » «”„ ‰‘«ÿﬂ Ê⁄‰Ê«‰ «·’›Õ… Ê«·”⁄— Ê«·Ê’›.</p>
+            </article>
+
+            <article class="step-card">
+                <span>02</span>
+                <h3>Œ’’ «· ’„Ì„</h3>
+                <p>«Œ — ‰Ê⁄ «·’›Õ… Ê«·√·Ê«‰ Ê’Ê—… «·„‰ Ã.</p>
+            </article>
+
+            <article class="step-card">
+                <span>03</span>
+                <h3>‰“¯· ’›Õ ﬂ</h3>
+                <p>√‰‘∆ „·› HTML „” ﬁ·«° À„ «‰‘—Â ⁄·Ï «·≈‰ —‰ .</p>
+            </article>
+        </div>
+    </section>
+
+</main>
+
+<footer class="footer">
+    <p>LANDING PRO © <span id="year"></span> ó „’‰⁄ ’›Õ«  «·Â»Êÿ</p>
+    <p>√œ«… ·≈‰‘«¡ ’›Õ«   ”ÊÌﬁÌ… „” ﬁ·… „‰ „ ’›Õﬂ.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

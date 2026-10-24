@@ -1,0 +1,813 @@
+/* ==========================================
+   LANDING PRO
+   Landing Page Builder
+   ========================================== */
+
+"use strict";
+
+const $ = (id) => document.getElementById(id);
+
+const form = $("landingForm");
+const frame = $("previewFrame");
+const message = $("message");
+
+const STORAGE_KEY = "landing_pro_project_v1";
+
+let productImage = "";
+let currentDevice = "desktop";
+
+/* «·»Ì«‰«  «·«› —«÷Ì… */
+
+const defaults = {
+    template: "product",
+    businessName: "„ Ã— «·√‰«ﬁ…",
+    headline: "«ﬂ ‘› „‰ Ã« ‰« «·„„Ì“…",
+    description: "„‰ Ã«  „Œ «—… »⁄‰«Ì… · ‰«”» «Õ Ì«Ã« ﬂ. «ÿ·» «·¬‰ Ê«” „ ⁄ » Ã—»…  ”Êﬁ ”Â·….",
+    price: "499",
+    oldPrice: "650",
+    features: "ÃÊœ… „„ «“…\n√”⁄«—  ‰«›”Ì…\nŒœ„… ⁄„·«¡ „„Ì“…\n Ê’Ì· ”—Ì⁄",
+    whatsapp: "",
+    buttonText: "«ÿ·» «·¬‰",
+    primaryColor: "#16a36a",
+    backgroundColor: "#ffffff",
+    ctaMessage: "„—Õ»«° √—Ìœ «·«” ›”«— ⁄‰ «·„‰ Ã."
+};
+
+/* Õ„«Ì… «·‰’Ê’ «· Ì ÌœŒ·Â« «·„” Œœ„ */
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => {
+        const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        };
+
+        return entities[char];
+    });
+}
+
+/* «· Õﬁﬁ „‰ ·Ê‰ HEX */
+
+function safeColor(value, fallback) {
+    return /^#[0-9a-fA-F]{6}$/.test(value)
+        ? value
+        : fallback;
+}
+
+/* ﬁ—«¡… «·»Ì«‰«  „‰ «·‰„Ê–Ã */
+
+function getFormData() {
+    return {
+        template: $("template").value,
+        businessName: $("businessName").value.trim(),
+        headline: $("headline").value.trim(),
+        description: $("description").value.trim(),
+        price: $("price").value,
+        oldPrice: $("oldPrice").value,
+        features: $("features").value,
+        whatsapp: $("whatsapp").value.trim(),
+        buttonText: $("buttonText").value.trim(),
+        primaryColor: $("primaryColor").value,
+        backgroundColor: $("backgroundColor").value,
+        ctaMessage: $("ctaMessage").value.trim()
+    };
+}
+
+/* «· Õﬁﬁ „‰ »Ì«‰«  «·„‘—Ê⁄ */
+
+function validateData(data) {
+    if (!data.businessName) {
+        return "„‰ ›÷·ﬂ √œŒ· «”„ «·‰‘«ÿ «· Ã«—Ì.";
+    }
+
+    if (!data.headline) {
+        return "„‰ ›÷·ﬂ √œŒ· «·⁄‰Ê«‰ «·—∆Ì”Ì.";
+    }
+
+    if (data.price !== "" && (
+        !Number.isFinite(Number(data.price)) ||
+        Number(data.price) < 0
+    )) {
+        return "«·”⁄— €Ì— ’ÕÌÕ.";
+    }
+
+    if (data.oldPrice !== "" && (
+        !Number.isFinite(Number(data.oldPrice)) ||
+        Number(data.oldPrice) < 0
+    )) {
+        return "«·”⁄— «·”«»ﬁ €Ì— ’ÕÌÕ.";
+    }
+
+    if (
+        data.price !== "" &&
+        data.oldPrice !== "" &&
+        Number(data.oldPrice) < Number(data.price)
+    ) {
+        return "«·”⁄— «·”«»ﬁ ÌÃ» √‰ ÌﬂÊ‰ √ﬂ»— „‰ «·”⁄— «·Õ«·Ì.";
+    }
+
+    if (data.whatsapp) {
+        const digits = data.whatsapp.replace(/[\s()+.-]/g, "");
+
+        if (!/^\d{8,15}$/.test(digits)) {
+            return " Õﬁﬁ „‰ —ﬁ„ Ê« ”«» Ê„› «Õ «·œÊ·….";
+        }
+    }
+
+    return "";
+}
+
+/*  ‰”Ìﬁ «·√”⁄«— */
+
+function formatPrice(value) {
+    const number = Number(value);
+
+    if (!Number.isFinite(number)) {
+        return "";
+    }
+
+    return new Intl.NumberFormat("ar-EG", {
+        maximumFractionDigits: 2
+    }).format(number) + " Ã‰ÌÂ";
+}
+
+/*  ÃÂÌ“ —ﬁ„ Ê« ”«» */
+
+function getWhatsAppURL(data) {
+    const phone = data.whatsapp.replace(/\D/g, "");
+
+    if (!/^\d{8,15}$/.test(phone)) {
+        return "";
+    }
+
+    const text = data.ctaMessage ||
+        `„—Õ»«° √—Ìœ «·«” ›”«— ⁄‰ ${data.headline}.`;
+
+    return "https://wa.me/" + phone +
+        "?text=" + encodeURIComponent(text);
+}
+
+/*  ÃÂÌ“ ﬁ«∆„… «·„„Ì“«  */
+
+function buildFeatures(features) {
+    const items = features
+        .split(/\r?\n/)
+        .map(item => item.trim())
+        .filter(Boolean)
+        .slice(0, 30);
+
+    if (items.length === 0) {
+        return "";
+    }
+
+    return `
+        <section class="features-section">
+            <h2>·„«–«  Œ «—‰«ø</h2>
+            <div class="features-grid">
+                ${items.map(item => `
+                    <div class="feature">
+                        <span class="check">?</span>
+                        <span>${escapeHTML(item)}</span>
+                    </div>
+                `).join("")}
+            </div>
+        </section>
+    `;
+}
+
+/* ≈‰‘«¡ ’›Õ… «·Â»Êÿ */
+
+function generateLandingHTML(data, image = "") {
+    const business = escapeHTML(data.businessName);
+    const headline = escapeHTML(data.headline);
+    const description = escapeHTML(data.description);
+
+    const primary = safeColor(data.primaryColor, "#16a36a");
+    const background = safeColor(data.backgroundColor, "#ffffff");
+
+    const template = [
+        "product",
+        "service",
+        "restaurant"
+    ].includes(data.template)
+        ? data.template
+        : "product";
+
+    const price = data.price !== ""
+        ? formatPrice(data.price)
+        : "";
+
+    const oldPrice = data.oldPrice !== ""
+        ? formatPrice(data.oldPrice)
+        : "";
+
+    const showDiscount =
+        price !== "" &&
+        oldPrice !== "" &&
+        Number(data.oldPrice) > Number(data.price);
+
+    const buttonText = escapeHTML(
+        data.buttonText || " Ê«’· „⁄‰«"
+    );
+
+    const whatsappURL = getWhatsAppURL(data);
+
+    let templateLabel = "„‰ Ã „„Ì“";
+
+    if (template === "service") {
+        templateLabel = "Œœ„«  «Õ —«›Ì…";
+    } else if (template === "restaurant") {
+        templateLabel = "ÿ⁄„ Ì” Õﬁ «· Ã—»…";
+    }
+
+    const imageHTML = image
+        ? `<img class="product-image"
+                 src="${image}"
+                 alt="${escapeHTML(data.headline)}">`
+        : `
+            <div class="image-placeholder">
+                <span>${template === "restaurant" ? "???" : template === "service" ? "?" : "???"}</span>
+                <p>√÷› ’Ê—… „„Ì“… ·„‰ Ãﬂ</p>
+            </div>
+        `;
+
+    const featuresHTML = buildFeatures(data.features);
+
+    const contactHTML = whatsappURL
+        ? `<a class="cta-button"
+              href="${escapeHTML(whatsappURL)}"
+              target="_blank"
+              rel="noopener noreferrer">${buttonText}</a>`
+        : `<span class="cta-button">${buttonText}</span>`;
+
+    const priceHTML = price
+        ? `
+            <div class="price-area">
+                <strong class="price">${price}</strong>
+                ${showDiscount
+                    ? `<del class="old-price">${oldPrice}</del>`
+                    : ""}
+            </div>
+        `
+        : "";
+
+    const heroLayout = template === "service"
+        ? "service-layout"
+        : template === "restaurant"
+            ? "restaurant-layout"
+            : "product-layout";
+
+    return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="${description.slice(0, 300)}">
+<meta name="theme-color" content="${primary}">
+<title>${business} | ${headline}</title>
+
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+    margin:0;
+    font-family:Tahoma,Arial,sans-serif;
+    color:#172033;
+    background:${background};
+    line-height:1.8;
+}
+a{color:inherit}
+.site-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    padding:18px 7%;
+    border-bottom:1px solid #e5e7eb;
+}
+.logo{
+    font-weight:800;
+    font-size:20px;
+    color:${primary};
+}
+.header-link{
+    text-decoration:none;
+    font-size:13px;
+    font-weight:bold;
+}
+.hero{
+    max-width:1180px;
+    margin:auto;
+    padding:65px 6%;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    align-items:center;
+    gap:45px;
+}
+.hero-content{min-width:0}
+.badge{
+    display:inline-block;
+    color:${primary};
+    background:${primary}16;
+    padding:6px 15px;
+    border-radius:25px;
+    font-size:13px;
+    font-weight:bold;
+}
+h1{
+    font-size:clamp(30px,4vw,49px);
+    line-height:1.45;
+    margin:20px 0;
+}
+.description{
+    color:#667085;
+    font-size:16px;
+    white-space:pre-line;
+}
+.price-area{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin:25px 0;
+}
+.price{
+    font-size:30px;
+    color:${primary};
+}
+.old-price{
+    color:#98a2b3;
+    font-size:17px;
+}
+.cta-button{
+    display:inline-block;
+    border:0;
+    text-decoration:none;
+    text-align:center;
+    background:${primary};
+    color:#fff;
+    padding:14px 28px;
+    border-radius:10px;
+    font-weight:bold;
+    font-size:15px;
+    cursor:pointer;
+    transition:opacity .2s;
+}
+.cta-button:hover{opacity:.88}
+.hero-visual{
+    min-width:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.product-image{
+    width:100%;
+    max-height:440px;
+    object-fit:contain;
+    border-radius:20px;
+}
+.image-placeholder{
+    width:100%;
+    min-height:300px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    background:#f0fdf4;
+    border:2px dashed #a7f3d0;
+    border-radius:20px;
+    color:#667085;
+}
+.image-placeholder span{font-size:75px}
+.features-section{
+    padding:55px 7%;
+    background:#f8fafc;
+}
+.features-section h2{
+    text-align:center;
+    font-size:27px;
+    margin:0 0 30px;
+}
+.features-grid{
+    max-width:1000px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:15px;
+}
+.feature{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:#fff;
+    padding:18px;
+    border:1px solid #eaecf0;
+    border-radius:12px;
+}
+.check{
+    display:grid;
+    place-items:center;
+    flex-shrink:0;
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    color:${primary};
+    background:${primary}16;
+    font-weight:bold;
+}
+.bottom-cta{
+    padding:55px 20px;
+    text-align:center;
+}
+.bottom-cta h2{font-size:28px}
+.bottom-cta p{color:#667085}
+footer{
+    text-align:center;
+    background:#101827;
+    color:#e2e8f0;
+    padding:22px 15px;
+    font-size:12px;
+}
+.service-layout .hero-visual{
+    background:#f0fdf4;
+    border-radius:25px;
+    padding:20px;
+}
+.restaurant-layout .badge{
+    background:#fff1e6;
+    color:#b54708;
+}
+.restaurant-layout .image-placeholder{
+    background:#fff7ed;
+    border-color:#fed7aa;
+}
+@media(max-width:700px){
+    .hero{
+        grid-template-columns:1fr;
+        padding:35px 6%;
+        gap:25px;
+    }
+    .hero-visual{order:-1}
+    .product-image{max-height:310px}
+    .image-placeholder{min-height:220px}
+    h1{font-size:32px}
+    .description{font-size:14px}
+    .features-grid{grid-template-columns:1fr}
+    .features-section{padding:35px 6%}
+    .site-header{padding:15px 5%}
+    .logo{font-size:17px}
+}
+</style>
+</head>
+
+<body>
+
+<header class="site-header">
+    <div class="logo">${business}</div>
+    <a class="header-link" href="#features">„„Ì“« ‰«</a>
+</header>
+
+<main>
+    <section class="hero ${heroLayout}">
+        <div class="hero-content">
+            <span class="badge">${escapeHTML(templateLabel)}</span>
+
+            <h1>${headline}</h1>
+
+            <p class="description">${description}</p>
+
+            ${priceHTML}
+
+            ${contactHTML}
+        </div>
+
+        <div class="hero-visual">
+            ${imageHTML}
+        </div>
+    </section>
+
+    <div id="features">
+        ${featuresHTML}
+    </div>
+
+    <section class="bottom-cta">
+        <h2>Â· √‰  „” ⁄œ ··»œ¡ø</h2>
+        <p> Ê«’· „⁄‰« «·¬‰ ·„⁄—›… «·„“Ìœ.</p>
+        ${contactHTML}
+    </section>
+</main>
+
+<footer>
+    <p>© ${new Date().getFullYear()} ${business}. Ã„Ì⁄ «·ÕﬁÊﬁ „Õ›ÊŸ….</p>
+</footer>
+
+</body>
+</html>`;
+}
+
+/*  ÕœÌÀ «·„⁄«Ì‰… */
+
+function updatePreview() {
+    const data = getFormData();
+    const error = validateData(data);
+
+    if (error) {
+        showMessage(error, true);
+        return;
+    }
+
+    const html = generateLandingHTML(data, productImage);
+
+    frame.srcdoc = html;
+
+    showMessage(" „  ÕœÌÀ «·„⁄«Ì‰… »‰Ã«Õ.", false);
+}
+
+/* ⁄—÷ «·—”«∆· */
+
+function showMessage(text, isError = false) {
+    message.textContent = text;
+    message.classList.toggle("error", isError);
+}
+
+/* Ã„⁄ «·»Ì«‰«  ·Õ›Ÿ «·„‘—Ê⁄ */
+
+function buildSavedProject() {
+    return {
+        version: 1,
+        data: getFormData(),
+        image: productImage
+    };
+}
+
+/* Õ›Ÿ «·„‘—Ê⁄ ⁄·Ï «·ÃÂ«“ */
+
+function saveProject() {
+    try {
+        const project = buildSavedProject();
+        const serialized = JSON.stringify(project);
+
+        localStorage.setItem(STORAGE_KEY, serialized);
+
+        showMessage(" „ Õ›Ÿ «·„‘—Ê⁄ ›Ì Â–« «·„ ’›Õ.");
+    } catch (error) {
+        showMessage(
+            " ⁄–— «·Õ›Ÿ. ﬁœ  ﬂÊ‰ „”«Õ… «· Œ“Ì‰ „„ ·∆… »”»» ÕÃ„ «·’Ê—….",
+            true
+        );
+    }
+}
+
+/* «” ⁄«œ… «·„‘—Ê⁄ */
+
+function restoreProject() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+
+        if (!raw) {
+            return false;
+        }
+
+        const project = JSON.parse(raw);
+
+        if (!project || !project.data) {
+            return false;
+        }
+
+        const allowedTemplates = [
+            "product",
+            "service",
+            "restaurant"
+        ];
+
+        const data = project.data;
+
+        for (const [key, value] of Object.entries(defaults)) {
+            const element = $(key);
+
+            if (!element) {
+                continue;
+            }
+
+            if (key === "template") {
+                element.value = allowedTemplates.includes(data[key])
+                    ? data[key]
+                    : defaults[key];
+            } else if (key === "primaryColor" ||
+                       key === "backgroundColor") {
+                element.value = safeColor(value === data[key] ? value : data[key], defaults[key]);
+            } else if (typeof data[key] === "string") {
+                element.value = data[key];
+            }
+        }
+
+        productImage = typeof project.image === "string" &&
+            project.image.startsWith("data:image/") &&
+            project.image.length < 5_000_000
+                ? project.image
+                : "";
+
+        $("removeImage").hidden = !productImage;
+
+        updatePreview();
+
+        return true;
+    } catch (error) {
+        console.error("Restore failed:", error);
+        return false;
+    }
+}
+
+/*  ‰“Ì· ’›Õ… «·Â»Êÿ ﬂ„·› HTML „” ﬁ· */
+
+function downloadLanding() {
+    const data = getFormData();
+    const error = validateData(data);
+
+    if (error) {
+        showMessage(error, true);
+        return;
+    }
+
+    const html = generateLandingHTML(data, productImage);
+
+    const blob = new Blob(
+        ["<!DOCTYPE html>\n", html],
+        { type: "text/html;charset=utf-8" }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "landing-page.html";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+
+    showMessage(
+        " „  ‰“Ì· ’›Õ… «·Â»Êÿ. «› Õ „·› HTML ›Ì «·„ ’›Õ · Ã—» Â«."
+    );
+}
+
+/*  Õ„Ì· «·’Ê—… «·„Œ «—… */
+
+$("imageUpload").addEventListener("change", (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+        return;
+    }
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+        showMessage("«Œ — ’Ê—… »’Ì€… JPG √Ê PNG √Ê WebP.", true);
+        event.target.value = "";
+        return;
+    }
+
+    if (file.size > 3 * 1024 * 1024) {
+        showMessage(
+            "ÕÃ„ «·’Ê—… √ﬂ»— „‰ 3 „ÌÃ«»«Ì . «Œ — ’Ê—… √’€—.",
+            true
+        );
+        event.target.value = "";
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+        if (typeof reader.result !== "string" ||
+            !reader.result.startsWith("data:image/")) {
+            showMessage(" ⁄–— ﬁ—«¡… «·’Ê—….", true);
+            return;
+        }
+
+        productImage = reader.result;
+        $("removeImage").hidden = false;
+
+        updatePreview();
+        showMessage(" „  ≈÷«›… «·’Ê—… »‰Ã«Õ.");
+    };
+
+    reader.onerror = () => {
+        showMessage("ÕœÀ Œÿ√ √À‰«¡ ﬁ—«¡… «·’Ê—….", true);
+    };
+
+    reader.readAsDataURL(file);
+});
+
+/* ≈“«·… «·’Ê—… */
+
+$("removeImage").addEventListener("click", () => {
+    productImage = "";
+    $("imageUpload").value = "";
+    $("removeImage").hidden = true;
+
+    updatePreview();
+    showMessage(" „  ≈“«·… «·’Ê—….");
+});
+
+/*  ÕœÌÀ «·„⁄«Ì‰… ⁄‰œ  ⁄œÌ· √Ì Õﬁ· */
+
+form.addEventListener("input", () => {
+    updatePreview();
+});
+
+form.addEventListener("change", () => {
+    updatePreview();
+});
+
+/* „‰⁄ ≈—”«· «·‰„Ê–Ã Ê≈⁄«œ…  Õ„Ì· «·’›Õ… */
+
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    updatePreview();
+});
+
+/* √“—«— «·Õ›Ÿ Ê«· ‰“Ì· */
+
+$("saveBtn").addEventListener("click", saveProject);
+
+$("downloadBtn").addEventListener("click", downloadLanding);
+
+/* „⁄«Ì‰… «·ﬂ„»ÌÊ — */
+
+$("desktopBtn").addEventListener("click", () => {
+    currentDevice = "desktop";
+
+    frame.classList.remove("mobile");
+
+    $("desktopBtn").classList.add("active");
+    $("mobileBtn").classList.remove("active");
+
+    $("desktopBtn").setAttribute("aria-pressed", "true");
+    $("mobileBtn").setAttribute("aria-pressed", "false");
+});
+
+/* „⁄«Ì‰… «·Â« › */
+
+$("mobileBtn").addEventListener("click", () => {
+    currentDevice = "mobile";
+
+    frame.classList.add("mobile");
+
+    $("mobileBtn").classList.add("active");
+    $("desktopBtn").classList.remove("active");
+
+    $("mobileBtn").setAttribute("aria-pressed", "true");
+    $("desktopBtn").setAttribute("aria-pressed", "false");
+});
+
+/* »œ¡ „‘—Ê⁄ ÃœÌœ */
+
+$("resetBtn").addEventListener("click", () => {
+    const confirmed = window.confirm(
+        "Â·  —Ìœ »œ¡ „‘—Ê⁄ ÃœÌœø ·‰ Ì „ Õ–› «·„‘—Ê⁄ «·„Õ›ÊŸ ≈·« ≈–« Õ›Ÿ  ›ÊﬁÂ."
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    for (const [key, value] of Object.entries(defaults)) {
+        $(key).value = value;
+    }
+
+    $("imageUpload").value = "";
+
+    productImage = "";
+    $("removeImage").hidden = true;
+
+    updatePreview();
+
+    showMessage("√’»Õ »≈„ﬂ«‰ﬂ «·»œ¡ ›Ì „‘—Ê⁄ ÃœÌœ.");
+});
+
+/* ”‰… ÕﬁÊﬁ «·‰‘— */
+
+$("year").textContent = new Date().getFullYear();
+
+/*  ‘€Ì· «·„‘—Ê⁄ */
+
+const restored = restoreProject();
+
+if (!restored) {
+    for (const [key, value] of Object.entries(defaults)) {
+        $(key).value = value;
+    }
+
+    updatePreview();
+}
